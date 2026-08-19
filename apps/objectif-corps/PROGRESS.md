@@ -75,9 +75,12 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   Custom avec les 5 domaines nécessaires) sur claude.ai/code. Une nouvelle session a été nécessaire pour
   que ça prenne effet (confirmé : la 1ère tentative dans la session déjà ouverte a échoué, la 2e a marché).
   **GitHub ✅, Supabase ✅, Vercel ✅ — tous re-vérifiés en live, tous valides.**
-  Comptes restants pour cette app : OpenAI (l'app prévoit de l'IA). Le blocage de création de dépôt dédié
-  (voir §0 Infra) reste, lui, séparé — un proxy GitHub distinct du réglage réseau, non affecté par ce
-  changement (à revérifier si utile).
+  **Noyau de comptes complet et 100% vérifié en live : GitHub, Supabase, Vercel, Expo, RevenueCat,
+  OpenAI ✅.** Seul Apple manque, normal — il n'est requis qu'à `/app-store` (GATE 2b).
+  Reconfirmation de la création de dépôt (voir §0) après le déblocage réseau : **toujours bloquée**, même
+  erreur exacte ("Resource not accessible by integration") — bien confirmé indépendant du réglage réseau,
+  comme l'indiquait la doc officielle ("GitHub operations use a separate proxy that is independent of this
+  setting"). Pas la peine de retester ce point tant que rien d'autre n'a changé côté GitHub App.
 - **Expo** : token reçu, **vérifié en live** (`GraphQL viewer.username`). Ajouté au passage un vrai check
   live pour Expo dans `verify-secrets.mjs` — son API renvoie 200 même pour un token invalide (l'erreur est
   dans le corps JSON), donc sans ce check un mauvais token aurait été annoncé "vérifié" à tort.
