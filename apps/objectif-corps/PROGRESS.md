@@ -34,6 +34,7 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
 - **2026-08-19** — `/launch` lancé. Idée reçue, spec verrouillée en autonomie avec des choix par défaut
   raisonnables (modèle freemium, composition d'archétypes content-library + tracker-streak). Risque Apple
   (domaine santé/nutrition, guidelines 1.4.1 et 5.1.1) identifié et mitigations notées dans `APP-SPEC.md`.
-  **Bloqué à l'étape Comptes** : `.recette/secrets.env` n'existe pas encore — aucun token disponible.
-  Impossible de créer le repo/l'infra/le build tant que ça n'est pas fait. Prochaine action : `/setup`,
-  compte par compte, en commençant par GitHub.
+  Étape Comptes démarrée : **GitHub ✅** (token fine-grained fourni, vérifié en live contre `GET /user`).
+  Au passage, corrigé un bug de `verify-secrets.mjs` qui rejetait à tort les tokens fine-grained
+  (`github_pat_...`, le format actuellement recommandé par GitHub — le script ne connaissait que l'ancien
+  format `ghp_`). Prochaine action : Supabase.
