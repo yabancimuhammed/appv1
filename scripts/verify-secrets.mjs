@@ -25,7 +25,17 @@ async function liveCheck(fn) {
 }
 
 const SERVICES = {
-  github: { vars: ["GITHUB_TOKEN"], format: (v) => /^gh[ps]_[a-zA-Z0-9]{20,}$/.test(v) },
+  github: {
+    vars: ["GITHUB_TOKEN"],
+    // ghp_/ghs_ = classique, github_pat_ = fine-grained (le format recommandé par GitHub aujourd'hui).
+    format: (v) => /^gh[ps]_[a-zA-Z0-9]{20,}$/.test(v) || /^github_pat_[a-zA-Z0-9_]{20,}$/.test(v),
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.github.com/user", {
+          headers: { Authorization: `Bearer ${vars.GITHUB_TOKEN}`, "User-Agent": "la-recette" },
+        }),
+      ),
+  },
   supabase: {
     vars: ["SUPABASE_ACCESS_TOKEN"],
     format: (v) => /^sbp_[a-zA-Z0-9]{20,}$/.test(v),
