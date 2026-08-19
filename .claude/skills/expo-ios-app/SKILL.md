@@ -103,6 +103,11 @@ interroge un service Expo de compatibilité en plus du registre npm) : retombe s
 joignable même quand d'autres services Expo/tiers ne le sont pas ; vérifie ensuite les versions installées
 avec `tsc --noEmit` plutôt que de bloquer dessus.
 
+**Si `npm install` échoue en `ERESOLVE`/peer dependency conflict** (vu de façon répétée avec
+`expo-router` → `@expo/ui`/`vaul` → `@radix-ui/*`, un conflit de peer deps côté support web
+d'`expo-router`, sans rapport avec le code iOS réel) : ajoute `--legacy-peer-deps` à la commande. Pas
+besoin d'investiguer plus loin pour ce cas précis — `tsc --noEmit` derrière confirme que ça n'a rien cassé.
+
 - Toute chaîne visible par l'utilisateur passe par les clés i18n (namespaces ci-dessus) — jamais de texte
   en dur dans un composant.
 - Toute couleur passe par `useThemeColors()` (voir plus bas) — jamais une couleur en dur dans un composant.
