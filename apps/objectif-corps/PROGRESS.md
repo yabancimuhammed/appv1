@@ -75,9 +75,14 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   Custom avec les 5 domaines nécessaires) sur claude.ai/code. Une nouvelle session a été nécessaire pour
   que ça prenne effet (confirmé : la 1ère tentative dans la session déjà ouverte a échoué, la 2e a marché).
   **GitHub ✅, Supabase ✅, Vercel ✅ — tous re-vérifiés en live, tous valides.**
-  Comptes restants pour cette app : RevenueCat + OpenAI (l'app prévoit de l'IA et un abonnement). Le
-  blocage de création de dépôt dédié (voir §0 Infra) reste, lui, séparé — un proxy GitHub distinct du
-  réglage réseau, non affecté par ce changement (à revérifier si utile).
+  Comptes restants pour cette app : OpenAI (l'app prévoit de l'IA). Le blocage de création de dépôt dédié
+  (voir §0 Infra) reste, lui, séparé — un proxy GitHub distinct du réglage réseau, non affecté par ce
+  changement (à revérifier si utile).
 - **Expo** : token reçu, **vérifié en live** (`GraphQL viewer.username`). Ajouté au passage un vrai check
   live pour Expo dans `verify-secrets.mjs` — son API renvoie 200 même pour un token invalide (l'erreur est
   dans le corps JSON), donc sans ce check un mauvais token aurait été annoncé "vérifié" à tort.
+- **RevenueCat** : clé secrète + clé publique reçues, **vérifiées en live**. Corrigé au passage un vrai
+  bug de diagnostic : le seul endpoint v2 utilisable pour vérifier (sans données de test) rejette une clé
+  "legacy" (v1 — exactement le type de clé que `/setup` demande, celle qui sert aux edge functions/
+  webhooks) avec un 403 qui ressemblait à un rejet ; distingué maintenant du vrai cas "clé invalide" (401)
+  en inspectant le type d'erreur renvoyé par l'API plutôt que juste le code HTTP.
