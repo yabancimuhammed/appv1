@@ -68,7 +68,9 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   `api.expo.dev`) sont bloqués par la politique réseau de cet environnement (confirmé : refus de la
   passerelle proxy, pas une erreur de clé). Seul `api.github.com` est autorisé ici. Corrigé au passage un
   vrai bug de fiabilité : le fetch natif de Node ignore `HTTPS_PROXY` par défaut, ce qui donnait un faux
-  "rejeté par l'API" au lieu d'une vraie "erreur réseau" (scripts/lib/proxy-bootstrap.mjs). **Décision à
-  prendre par le client** : continuer ici en acceptant que la vérification live et le build réel ne
-  pourront pas se finir dans cette session, ou reprendre dans l'environnement Claude Code local (celui
-  visé par GETTINGSTARTED.md, sans cette restriction réseau).
+  "rejeté par l'API" au lieu d'une vraie "erreur réseau" (scripts/lib/proxy-bootstrap.mjs). **Décision
+  prise par le client** : continuer ici quand même.
+- **Vercel** : même situation que Supabase — token reçu, rangé, mais `api.vercel.com` bloqué ici
+  (confirmé, correctement diagnostiqué "erreur réseau" grâce au correctif proxy — pas un faux rejet cette
+  fois). Comptes restants pour cette app : Expo (fabrication), puis RevenueCat + OpenAI (l'app prévoit de
+  l'IA et un abonnement).
