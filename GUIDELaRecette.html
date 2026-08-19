@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>La Recette — Guide de démarrage</title>
+<style>
+  :root{ --ink:#17150f; --muted:#807668; --accent:#E5732B; --line:#eceae5; --soft:#faf8f5; }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink);
+    margin:0; font-size:14.5px; line-height:1.6}
+  @page{ size:A4; margin:20mm 18mm }
+  h1,h2,h3{line-height:1.25; margin:0}
+  p{margin:.5em 0}
+  a{color:var(--accent); text-decoration:none}
+  .muted{color:var(--muted)}
+  code{background:var(--soft); border:1px solid var(--line); border-radius:5px; padding:1px 6px;
+    font-family:"SF Mono",Consolas,monospace; font-size:12.5px}
+
+  /* Cover */
+  .cover{height:250mm; display:flex; flex-direction:column; justify-content:center}
+  .cover .b{font-size:74px}
+  .cover h1{font-size:46px; letter-spacing:-1px; margin:.15em 0 .1em}
+  .cover .sub{font-size:19px; color:var(--muted); max-width:15cm}
+  .cover .by{margin-top:auto; padding-top:20px; font-size:12.5px; color:var(--muted); border-top:1px solid var(--line)}
+  .cover .rule{width:54px; height:4px; background:var(--accent); border-radius:2px; margin:22px 0}
+
+  .section{page-break-before:always}
+  .kicker{color:var(--accent); font-weight:700; letter-spacing:1.6px; font-size:10.5px; text-transform:uppercase}
+  h2.big{font-size:26px; margin:.15em 0 .5em}
+
+  /* Overview list */
+  .over{border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:14px}
+  .over .row{display:flex; gap:14px; align-items:center; padding:13px 16px; border-bottom:1px solid var(--line)}
+  .over .row:last-child{border-bottom:0}
+  .over .num{flex:0 0 26px; height:26px; width:26px; border-radius:50%; background:var(--soft);
+    border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center}
+  .over .t{flex:1}
+  .over .t b{font-size:14.5px}
+  .over .meta{font-size:12px; color:var(--muted); white-space:nowrap}
+
+  /* Step */
+  .step{page-break-before:always}
+  .step .head{display:flex; align-items:center; gap:16px; margin-bottom:6px}
+  .step .circle{flex:0 0 52px; height:52px; width:52px; border-radius:50%; background:var(--accent);
+    color:#fff; font-weight:800; font-size:24px; display:flex; align-items:center; justify-content:center}
+  .step h2{font-size:24px}
+  .badges{margin:4px 0 16px; font-size:12.5px; color:var(--muted)}
+  .badges span{background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:3px 10px; margin-right:6px}
+  .do{font-weight:700; margin:16px 0 4px; font-size:13px; letter-spacing:.3px; text-transform:uppercase; color:var(--muted)}
+  ul{margin:.3em 0 .6em; padding-left:20px} li{margin:.3em 0}
+  .done{margin-top:16px; background:var(--soft); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:10px 14px; font-size:13.5px}
+  .done b{color:var(--ink)}
+
+  table{width:100%; border-collapse:collapse; margin:10px 0; font-size:12.5px}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px}
+  .free{color:#1f8a4c; font-weight:700} .paid{color:#b4571a; font-weight:700}
+  footer{margin-top:34px; padding-top:12px; border-top:1px solid var(--line); font-size:11px; color:var(--muted); text-align:center}
+  .lead{font-size:16px; color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="cover">
+  <div class="b">🍜</div>
+  <h1>La Recette</h1>
+  <div class="rule"></div>
+  <div class="sub">Ton guide de démarrage — de ton idée à ton app iPhone, <b>étape par étape</b>.</div>
+  <div class="by">Guide officiel · @minosdevs · Tu n'as jamais codé ? C'est fait pour toi.</div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="section">
+  <span class="kicker">Vue d'ensemble</span>
+  <h2 class="big">Ton parcours, en 6 étapes</h2>
+  <p class="lead">Suis-les dans l'ordre. Une seule partie est « technique » (installer + ouvrir) — le reste, tu le fais <b>en parlant</b>. À chaque étape tu sais ce que tu fais et ce qu'il te reste.</p>
+  <div class="over">
+    <div class="row"><div class="num">1</div><div class="t"><b>Installer &amp; ouvrir</b><br><span class="muted">Claude Code + le dossier La Recette</span></div><div class="meta">~5 min · toi</div></div>
+    <div class="row"><div class="num">2</div><div class="t"><b>Dire ton idée</b><br><span class="muted">tu racontes, La Recette fait le plan</span></div><div class="meta">~15 min · ensemble</div></div>
+    <div class="row"><div class="num">3</div><div class="t"><b>Brancher tes comptes</b><br><span class="muted">les « clés » (gratuites) — une seule fois</span></div><div class="meta">45–90 min · toi, guidé</div></div>
+    <div class="row"><div class="num">4</div><div class="t"><b>Construire</b><br><span class="muted">La Recette monte l'app, tu regardes</span></div><div class="meta">qq heures · elle</div></div>
+    <div class="row"><div class="num">5</div><div class="t"><b>Voir sur ton iPhone</b><br><span class="muted">un QR code, ton app dans ta main</span></div><div class="meta">~2 min · toi</div></div>
+    <div class="row"><div class="num">6</div><div class="t"><b>Publier sur l'App Store</b><br><span class="muted">compte Apple + quelques clics guidés</span></div><div class="meta">qq jours · ensemble</div></div>
+  </div>
+  <div class="done"><b>Avant de commencer, aie sous la main :</b> un ordinateur (Windows ou Mac), un iPhone. Le compte Apple (99 $/an) ne servira qu'à l'étape 6 — pas maintenant.</div>
+</section>
+
+<!-- STEP 1 -->
+<section class="step">
+  <div class="head"><div class="circle">1</div><h2>Installer &amp; ouvrir</h2></div>
+  <div class="badges"><span>⏱ ~5 min</span><span>👤 toi</span><span>la seule partie technique</span></div>
+  <div class="do">Ce que tu fais</div>
+  <ul>
+    <li>Va sur <b>claude.ai/code</b>, télécharge l'app <b>Claude Code</b>, installe-la, connecte-toi.</li>
+    <li><b>Dézippe</b> le fichier <code>la-recette.zip</code> → tu obtiens un dossier <code>la-recette</code> (pose-le sur ton Bureau).</li>
+    <li>Dans Claude Code : <b>« Ouvrir un dossier »</b> → choisis le dossier <code>la-recette</code>.</li>
+  </ul>
+  <div class="done"><b>✅ C'est bon quand :</b> Claude Code est ouvert dans le dossier <code>la-recette</code>. (S'il répond « comme d'habitude » au lieu de se comporter comme ton constructeur d'app, c'est que le dossier n'est pas le bon — rouvre <code>la-recette</code>.)</div>
+</section>
+
+<!-- STEP 2 -->
+<section class="step">
+  <div class="head"><div class="circle">2</div><h2>Dire ton idée</h2></div>
+  <div class="badges"><span>⏱ ~15 min</span><span>👤 toi + La Recette</span></div>
+  <div class="do">Ce que tu fais</div>
+  <ul>
+    <li>Écris ton idée avec tes mots : <i>« une app pour suivre mes entraînements »</i>.</li>
+    <li>Réponds à ses 2-3 questions simples (elle joue le chef de produit : features, style, monétisation).</li>
+  </ul>
+  <div class="do">Ce qu'elle fait</div>
+  <ul>
+    <li>Elle reformule pour être sûre, te prévient si un truc risque d'être refusé par Apple, et <b>verrouille un plan clair</b> avant de coder.</li>
+  </ul>
+  <div class="done"><b>✅ C'est bon quand :</b> le plan de ton app est validé ensemble. Tu n'as rien décidé de technique — juste ton idée.</div>
+</section>
+
+<!-- STEP 3 -->
+<section class="step">
+  <div class="head"><div class="circle">3</div><h2>Brancher tes comptes</h2></div>
+  <div class="badges"><span>⏱ 45–90 min</span><span>👤 toi, guidé</span><span>une seule fois</span></div>
+  <p>La Recette a besoin d'« accès » pour agir à ta place. Elle te les demande <b>un par un</b>, te dit exactement où aller, et vérifie chaque clé. Tu colles, elle range en sécurité. Voici la carte :</p>
+  <div class="do">Le noyau (obligatoire)</div>
+  <table>
+    <tr><th>Service</th><th>Sert à</th><th>Où</th><th>Prix</th></tr>
+    <tr><td><b>GitHub</b></td><td>Sauver le code</td><td>« connecte GitHub » (elle ouvre le navigateur)</td><td class="free">Gratuit</td></tr>
+    <tr><td><b>Supabase</b></td><td>Base + connexion</td><td>supabase.com → account → tokens</td><td class="free">Gratuit</td></tr>
+    <tr><td><b>Vercel</b></td><td>Héberger le site</td><td>vercel.com → settings → tokens</td><td class="free">Gratuit</td></tr>
+    <tr><td><b>Expo</b></td><td>Fabriquer l'app</td><td>expo.dev/settings/access-tokens</td><td class="free">Gratuit</td></tr>
+  </table>
+  <div class="do">Selon ton app</div>
+  <table>
+    <tr><td><b>RevenueCat</b></td><td>Abonnements</td><td>app.revenuecat.com → projet → API keys</td><td class="free">Gratuit</td></tr>
+    <tr><td><b>OpenAI</b></td><td>Si l'app a de l'IA</td><td>platform.openai.com/api-keys</td><td class="paid">À l'usage</td></tr>
+  </table>
+  <div class="done"><b>✅ C'est bon quand :</b> le tableau des comptes est tout vert. La Recette te le montre. <b>Astuce :</b> une clé = un mot de passe → ne la colle nulle part ailleurs que dans La Recette.</div>
+</section>
+
+<!-- STEP 4 -->
+<section class="step">
+  <div class="head"><div class="circle">4</div><h2>Construire</h2></div>
+  <div class="badges"><span>⏱ quelques heures</span><span>👤 elle (tu regardes)</span></div>
+  <div class="do">Ce qu'elle construit, toute seule</div>
+  <ul>
+    <li>📱 L'app iPhone (écrans + la fonction qui fait le cœur de ton idée)</li>
+    <li>🔐 Les comptes, la connexion, les données sécurisées</li>
+    <li>💳 L'écran d'abonnement (si tu monétises)</li>
+    <li>🌐 Ton site de présentation, optimisé Google + IA, avec <b>~10 articles de blog</b> dès le départ</li>
+    <li>🎨 L'icône, l'écran de démarrage, les visuels</li>
+  </ul>
+  <p class="muted">Elle installe elle-même tous les outils (Expo, etc.) et se vérifie à chaque étape. Tu n'as rien à faire.</p>
+  <div class="done"><b>✅ C'est bon quand :</b> elle t'annonce que l'app est <b>« prête côté code »</b>. Il restera l'étape Apple (étape 6).</div>
+</section>
+
+<!-- STEP 5 -->
+<section class="step">
+  <div class="head"><div class="circle">5</div><h2>Voir sur ton iPhone</h2></div>
+  <div class="badges"><span>⏱ ~2 min</span><span>👤 toi</span></div>
+  <div class="do">Ce que tu fais</div>
+  <ul>
+    <li>Installe l'app gratuite <b>Expo Go</b> sur ton iPhone.</li>
+    <li>La Recette t'affiche un <b>QR code</b> → tu le scannes → ton app s'ouvre dans ta main. 🎉</li>
+  </ul>
+  <div class="done"><b>✅ C'est bon quand :</b> tu tiens ton app et tu peux cliquer dedans. <span class="muted">(L'écran d'abonnement, lui, se testera sur la vraie version à l'étape 6.)</span></div>
+</section>
+
+<!-- STEP 6 -->
+<section class="step">
+  <div class="head"><div class="circle">6</div><h2>Publier sur l'App Store</h2></div>
+  <div class="badges"><span>⏱ quelques jours</span><span>👤 toi + elle</span></div>
+  <div class="do">Ce que TOI seul peux faire</div>
+  <ul>
+    <li>Ouvrir ton <b>compte Apple Developer</b> (99 $/an) — c'est le déclencheur de toute cette étape.</li>
+    <li>Signer les contrats Apple + 2-3 petits clics (un code de sécurité, le bouton « Envoyer »).</li>
+  </ul>
+  <div class="do">Ce qu'elle fait pour toi</div>
+  <ul>
+    <li>Fabrique la vraie app, met en service les abonnements, crée les captures, remplit la fiche App Store, et l'envoie en validation.</li>
+  </ul>
+  <div class="done"><b>✅ C'est bon quand :</b> l'app est envoyée à Apple. Ils valident en général en <b>1 à 3 jours</b>, puis elle est en ligne. 🚀 <span class="muted">(Apple peut demander une correction — La Recette la gère avec toi.)</span></div>
+</section>
+
+<!-- APPENDICE -->
+<section class="section">
+  <span class="kicker">Pour aller plus loin</span>
+  <h2 class="big">Aide-mémoire</h2>
+
+  <div class="do">Si ça coince</div>
+  <ul>
+    <li><b>Tu es perdu ?</b> Écris juste « je suis perdu » — elle te resitue et te donne la prochaine action.</li>
+    <li><b>Une erreur ?</b> Elle l'explique en français simple et la répare elle-même. Jamais de charabia.</li>
+    <li><b>Vraiment bloqué ?</b> Elle t'oriente vers le support — jamais un cul-de-sac.</li>
+  </ul>
+
+  <div class="do">Les commandes (juste des raccourcis — tu peux aussi parler normalement)</div>
+  <table>
+    <tr><td><code>/setup</code></td><td>Brancher tes comptes</td><td><code>/preview</code></td><td>Voir sur ton iPhone</td></tr>
+    <tr><td><code>/build</code></td><td>Construire l'app</td><td><code>/blog "sujet"</code></td><td>Ajouter un article</td></tr>
+    <tr><td><code>/deploy</code></td><td>Mettre en ligne</td><td><code>/fix</code></td><td>Corriger un bug</td></tr>
+    <tr><td><code>/app-store</code></td><td>Publier</td><td><code>/status</code></td><td>Où j'en suis</td></tr>
+  </table>
+
+  <div class="do">Bon à savoir</div>
+  <ul>
+    <li>Les services (base, hébergement, fabrication) sont <b>gratuits</b>. Seuls coûts : Apple 99 $/an (pour publier) et l'IA à l'usage (si ton app en a).</li>
+    <li>Ton app est <b>100 % à toi</b> — code et données dans tes comptes.</li>
+    <li>Pour l'instant, La Recette fait des apps <b>iPhone / iOS</b> (pas Android).</li>
+  </ul>
+  <footer>🍜 La Recette · @minosdevs — De ton idée à ton app, sans coder.</footer>
+</section>
+
+</body>
+</html>
