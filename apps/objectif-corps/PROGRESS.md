@@ -3,12 +3,21 @@
 Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE 1 passée).
 
 ## 0. Infra
-- [ ] repo: TODO (créé à cette phase, une fois GITHUB_TOKEN branché)
-- [ ] supabase-ref: TODO
-- [ ] vercel: TODO
-- [ ] Ce dossier (`apps/objectif-corps/`) sert de zone de travail jusqu'à la création du repo dédié ;
-      le contenu y sera poussé vers ce nouveau repo à ce moment-là (pas vers `appv1`, qui reste l'outil
-      La Recette, jamais le code d'une app cliente).
+- [ ] repo dédié: **bloqué dans cette session** — testé et confirmé sur 2 canaux différents :
+      1) appel direct à l'API GitHub avec le token collé par le client → refusé par la politique réseau
+         de cette session (seul `appv1` est dans le périmètre autorisé) ;
+      2) outil GitHub officiel de la session (`create_repository`) → refusé aussi : "Resource not
+         accessible by integration" (l'app GitHub installée sur cette session n'a pas la permission de
+         créer un nouveau dépôt, seulement d'agir sur `appv1`).
+      → Ce n'est pas un token invalide ni un bug corrigeable ici : c'est une limite structurelle de ce
+      type de session ("Claude Code sur le web", scopée à un seul dépôt). La création réelle du dépôt
+      dédié + son push se fera depuis un environnement sans cette restriction (Claude Code en local, voir
+      GETTINGSTARTED.md, ou une session dont le périmètre GitHub a été élargi).
+- [ ] supabase-ref: TODO — bloqué de la même façon (réseau non autorisé vers `api.supabase.com`).
+- [ ] vercel: TODO — idem.
+- **En attendant** : `apps/objectif-corps/` (dans `appv1`) sert de zone de travail. Tout le code
+  s'écrit et se vérifie ici (npm/tsc fonctionnent, `registry.npmjs.org` n'est pas bloqué). À la reprise
+  dans un environnement débloqué : créer le repo dédié, y transférer ce dossier, poursuivre l'infra.
 
 ## 1. Scaffold
 - [ ] Projet Expo (SDK épinglé), navigation, thème clair/sombre, i18n FR/EN — voir skill `expo-ios-app`.
