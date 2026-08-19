@@ -57,7 +57,32 @@ const SERVICES = {
         }),
       ),
   },
-  expo: { vars: ["EXPO_TOKEN"], format: (v) => v.length > 10 },
+  expo: {
+    vars: ["EXPO_TOKEN"],
+    format: (v) => v.length > 10,
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.expo.dev/graphql", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${vars.EXPO_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query: "{ viewer { username } }" }),
+        }).then((res) => {
+          // Expo répond 200 même token invalide (erreurs GraphQL dans le body) — traite ça comme un rejet.
+          if (!res.ok) return res;
+          return res
+            .clone()
+            .json()
+            .then((body) =>
+              body?.data?.viewer?.username
+                ? res
+                : new Response(JSON.stringify(body), { status: 401 }),
+            );
+        }),
+      ),
+  },
   revenuecat: { vars: ["REVENUECAT_SECRET_KEY", "EXPO_PUBLIC_REVENUECAT_KEY"], format: (v) => v.length > 10 },
   openai: {
     vars: ["OPENAI_API_KEY"],
