@@ -103,7 +103,9 @@ const SERVICES = {
   },
   openai: {
     vars: ["OPENAI_API_KEY"],
-    format: (v) => /^sk-[a-zA-Z0-9]{20,}$/.test(v),
+    // sk-... = ancien format (legacy), sk-proj-... = clé de projet actuelle — les deux contiennent
+    // tirets et underscores en plus des alphanumériques, contrairement à l'ancien regex trop strict.
+    format: (v) => /^sk-[a-zA-Z0-9_-]{20,}$/.test(v),
     live: async (vars) =>
       liveCheck(() =>
         fetch("https://api.openai.com/v1/models", {
