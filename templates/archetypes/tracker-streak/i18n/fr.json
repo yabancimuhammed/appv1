@@ -1,0 +1,18 @@
+{
+  "items": {
+    "empty": "Rien à suivre pour l'instant. Ajoute ton premier élément pour commencer ta série.",
+    "loadError": "Impossible de charger tes éléments pour le moment.",
+    "markError": "Impossible d'enregistrer ça pour le moment, réessaie.",
+    "saveError": "Impossible d'enregistrer, réessaie.",
+    "streak": "{{count}} jour de suite",
+    "streak_plural": "{{count}} jours de suite",
+    "streakLabel": "jours de suite",
+    "markDone": "Marquer comme fait aujourd'hui",
+    "doneToday": "Fait aujourd'hui ✓",
+    "namePlaceholder": "Nom (ex. Méditation, Lecture...)"
+  },
+  "common": {
+    "retry": "Réessayer",
+    "save": "Enregistrer"
+  }
+}

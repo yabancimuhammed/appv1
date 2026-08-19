@@ -1,0 +1,14 @@
+{
+  "library": {
+    "empty": "Nothing saved yet. Add your first item.",
+    "loadError": "Couldn't load your library right now.",
+    "saveError": "Couldn't save, try again.",
+    "searchPlaceholder": "Search...",
+    "titlePlaceholder": "Title",
+    "bodyPlaceholder": "Content",
+    "aiSummaryLabel": "Generated summary"
+  },
+  "common": {
+    "save": "Save"
+  }
+}

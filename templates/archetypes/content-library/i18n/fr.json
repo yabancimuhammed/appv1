@@ -1,0 +1,14 @@
+{
+  "library": {
+    "empty": "Rien de sauvegardé pour l'instant. Ajoute ton premier élément.",
+    "loadError": "Impossible de charger ta bibliothèque pour le moment.",
+    "saveError": "Impossible d'enregistrer, réessaie.",
+    "searchPlaceholder": "Rechercher...",
+    "titlePlaceholder": "Titre",
+    "bodyPlaceholder": "Contenu",
+    "aiSummaryLabel": "Résumé généré"
+  },
+  "common": {
+    "save": "Enregistrer"
+  }
+}
