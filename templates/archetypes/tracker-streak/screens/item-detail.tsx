@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
 import { supabase } from "../../lib/supabase";
 import { computeStreak, type Entry } from "./streak";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 export default function ItemDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [marking, setMarking] = useState(false);

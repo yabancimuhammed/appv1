@@ -69,6 +69,13 @@ Deno.serve(async (req) => {
 });
 ```
 
+## Suppression de compte (obligatoire si auth — guideline Apple 5.1.1v)
+
+Clone `templates/base/supabase/functions/delete-account/index.ts` **telle quelle** (pas de réécriture à
+la main) et déploie-la. Elle exige la variable d'env serveur `SUPABASE_SERVICE_ROLE_KEY` (jamais préfixée
+`EXPO_PUBLIC_`, jamais côté client) pour supprimer réellement le compte via l'API admin. L'écran
+`app/(tabs)/settings.tsx` (cloné depuis `templates/base/`, voir skill `expo-ios-app`) l'appelle déjà.
+
 ## Self-vérification de cette phase
 
 - `grep -rn "EXPO_PUBLIC_"` : uniquement URL Supabase + clé **anon** + clé publique RevenueCat — rien d'autre.

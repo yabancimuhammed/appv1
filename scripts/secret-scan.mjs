@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 // Garde-fou secrets — hook PreToolUse (Bash|PowerShell), voir .claude/settings.json.
 //
-// Lit le payload JSON du hook sur stdin, regarde la commande sur le point d'être exécutée, et bloque
-// (decision "block" sur stdout, exit 0 — c'est le protocole JSON des hooks, pas le code de sortie qui
-// décide) toute commande qui risquerait de faire fuiter un secret : lire/afficher/committer
-// .recette/secrets.env, une clé privée .p8, ou une valeur qui ressemble à une vraie clé secrète collée
-// en dur dans une commande.
-//
-// Ne bloque JAMAIS un faux positif silencieusement : en cas de doute sur le payload lui-même (JSON
-// invalide, champ manquant), on laisse passer plutôt que de casser le travail de l'utilisateur.
+// Protocole des hooks Claude Code (voir docs officielles) : exit 2 = bloque l'exécution de l'outil,
+// exit 0 = autorisé. On complète le blocage d'un JSON `hookSpecificOutput` sur stderr pour donner une
+// raison lisible. IMPORTANT : n'importe quelle erreur INTERNE à ce script (payload illisible, bug) doit
+// sortir en 0 (fail open) — un bug ici ne doit jamais bloquer tout Bash. Seul un blocage VOULU sort en 2.
+// (`.claude/settings.json` appelle ce script SANS `|| exit 0` autour — un tel wrapper neutraliserait
+// silencieusement tout `exit 2`, voir historique du fichier : c'était le bug initial, corrigé.)
 
 const SENSITIVE_PATHS = [
   /\.recette\/secrets\.env/,
@@ -26,7 +24,8 @@ const SECRET_VALUE_PATTERNS = [
   /-----BEGIN (RSA |EC )?PRIVATE KEY-----/,
 ];
 
-// Commandes qui liraient/afficheraient un chemin sensible pour de vrai (pas juste le mentionner).
+// Commandes qui liraient/afficheraient/committeraient un chemin sensible pour de vrai (pas juste le
+// mentionner en argument d'une autre commande, ex. `rm .recette/secrets.env` n'est pas une fuite).
 const RISKY_VERBS = /^(cat|less|more|type|head|tail|echo|printf|cp|scp|curl|git add|git commit)\b/i;
 
 function readStdin() {
@@ -39,44 +38,56 @@ function readStdin() {
 }
 
 function block(reason) {
-  process.stdout.write(JSON.stringify({ decision: "block", reason }));
-  process.exit(0);
+  process.stderr.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "deny",
+        permissionDecisionReason: reason,
+      },
+    }),
+  );
+  process.exit(2);
 }
 
 function allow() {
   process.exit(0);
 }
 
-const raw = await readStdin();
-if (!raw.trim()) allow();
+async function main() {
+  const raw = await readStdin();
+  if (!raw.trim()) return allow();
 
-let payload;
-try {
-  payload = JSON.parse(raw);
-} catch {
-  allow(); // payload illisible → on ne casse pas le flux, on laisse passer
-}
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch {
+    return allow(); // payload illisible → on ne casse pas le flux, on laisse passer (fail open)
+  }
 
-const command = payload?.tool_input?.command ?? payload?.tool_input?.script ?? "";
-if (!command || typeof command !== "string") allow();
+  const command = payload?.tool_input?.command;
+  if (!command || typeof command !== "string") return allow();
 
-for (const valuePattern of SECRET_VALUE_PATTERNS) {
-  if (valuePattern.test(command)) {
-    block(
-      "Cette commande contient ce qui ressemble à une vraie clé secrète en clair. " +
-        "Les clés tierces ne doivent jamais apparaître en dur dans une commande ou dans le code — " +
-        "passe par .recette/secrets.env et une edge function côté serveur (voir skill supabase-backend).",
+  for (const valuePattern of SECRET_VALUE_PATTERNS) {
+    if (valuePattern.test(command)) {
+      return block(
+        "Cette commande contient ce qui ressemble à une vraie clé secrète en clair. " +
+          "Les clés tierces ne doivent jamais apparaître en dur dans une commande ou dans le code — " +
+          "passe par .recette/secrets.env et une edge function côté serveur (voir skill supabase-backend).",
+      );
+    }
+  }
+
+  const touchesSensitivePath = SENSITIVE_PATHS.some((p) => p.test(command));
+  if (touchesSensitivePath && RISKY_VERBS.test(command.trim())) {
+    return block(
+      "Cette commande lit, copie ou committerait un fichier de secrets (.recette/secrets.env, une clé " +
+        ".p8, un keystore…). Ces fichiers ne doivent jamais être affichés dans le chat ni ajoutés à git " +
+        "— ils sont dans .gitignore pour une raison.",
     );
   }
+
+  allow();
 }
 
-const touchesSensitivePath = SENSITIVE_PATHS.some((p) => p.test(command));
-if (touchesSensitivePath && RISKY_VERBS.test(command.trim())) {
-  block(
-    "Cette commande lit, copie ou committerait un fichier de secrets (.recette/secrets.env, une clé .p8, " +
-      "un keystore…). Ces fichiers ne doivent jamais être affichés dans le chat ni ajoutés à git — " +
-      "ils sont dans .gitignore pour une raison.",
-  );
-}
-
-allow();
+main().catch(() => allow()); // toute erreur imprévue du script = fail open, jamais un blocage aveugle

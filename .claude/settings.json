@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/secret-scan.mjs\" || exit 0",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/secret-scan.mjs\"",
             "timeout": 30
           }
         ]

@@ -30,34 +30,77 @@ npx create-expo-app@latest . --template
 
 ```
 app/                  # écrans + routing (expo-router)
+  (tabs)/
+    settings.tsx      # copié depuis templates/base/ — suppression de compte obligatoire (5.1.1v)
 components/           # UI réutilisable
 lib/
-  supabase.ts         # client Supabase (URL + clé anon depuis les env, jamais en dur)
+  supabase.ts         # copié depuis templates/base/ — NE PAS réécrire à la main
   api/                 # appels aux edge functions
 hooks/                # logique réutilisable (état, data-fetching)
 i18n/
-  fr.json
+  index.ts             # copié depuis templates/base/ — config i18next, NE PAS réécrire à la main
+  fr.json               # fusionné : clés de templates/base/i18n/fr.json + celles de l'archétype cloné
   en.json
 theme/
-  colors.ts            # tokens clair/sombre — jamais une couleur en dur dans un composant
+  colors.ts            # copié depuis templates/base/ — contrat de tokens fixe, voir plus bas
 constants/
 ```
 
-- Toute chaîne visible par l'utilisateur passe par `i18n/fr.json` + `i18n/en.json` (clés identiques dans
-  les deux fichiers — vérifie qu'aucune clé ne manque d'un côté).
-- Toute couleur passe par `theme/colors.ts`, avec une variante clair et une variante sombre.
-- Toute URL/clé publique passe par une variable d'env (`EXPO_PUBLIC_SUPABASE_URL`, etc.), jamais en dur.
+### Ne pars jamais d'une page blanche — clone `templates/base/`
+
+`$CLAUDE_PROJECT_DIR/templates/base/` contient les fichiers de fondation, déjà écrits et cohérents entre
+eux, que **toute** app La Recette réutilise **telsquels** (pas de réécriture à la main, seule source
+d'erreurs et de divergence entre apps) :
+
+```
+cp "$CLAUDE_PROJECT_DIR/templates/base/lib/supabase.ts"              lib/supabase.ts
+cp "$CLAUDE_PROJECT_DIR/templates/base/theme/colors.ts"               theme/colors.ts
+cp "$CLAUDE_PROJECT_DIR/templates/base/i18n/index.ts"                 i18n/index.ts
+cp "$CLAUDE_PROJECT_DIR/templates/base/i18n/fr.json"                  i18n/fr.json
+cp "$CLAUDE_PROJECT_DIR/templates/base/i18n/en.json"                  i18n/en.json
+cp "$CLAUDE_PROJECT_DIR/templates/base/app/(tabs)/settings.tsx"       "app/(tabs)/settings.tsx"
+cp "$CLAUDE_PROJECT_DIR/templates/base/supabase/functions/delete-account/index.ts" \
+   supabase/functions/delete-account/index.ts
+```
+
+Puis, en phase Features (skill `app-core-patterns`), les clés i18n de l'archétype cloné sont **fusionnées**
+dans `i18n/fr.json`/`i18n/en.json` (jamais remplacées) — un objet JSON plat qui regroupe les namespaces
+`common`/`auth`/`settings` (base) et le namespace métier de l'archétype (ex. `items`, `library`).
+
+### Dépendances npm exactes
+
+```
+npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill \
+  i18next react-i18next expo-localization expo-router
+```
+
+(+ `expo-dev-client` si le piège Expo Go ci-dessus s'applique, `react-native-purchases` en phase Paywall.)
+
+- Toute chaîne visible par l'utilisateur passe par les clés i18n (namespaces ci-dessus) — jamais de texte
+  en dur dans un composant.
+- Toute couleur passe par `useThemeColors()` (voir plus bas) — jamais une couleur en dur dans un composant.
+- Toute URL/clé publique passe par une variable d'env (`EXPO_PUBLIC_SUPABASE_URL`,
+  `EXPO_PUBLIC_SUPABASE_ANON_KEY`), jamais en dur.
 
 ## Navigation
 
 Utilise `expo-router` (routing par fichiers). Prévoit dès le départ : onglets principaux (dictés par
-`APP-SPEC.md`), écran de connexion/inscription si auth, écran de paramètres (accès suppression de compte —
-obligatoire si auth, guideline Apple 5.1.1v).
+`APP-SPEC.md`), écran de connexion/inscription si auth, l'écran `settings.tsx` cloné ci-dessus (accès
+suppression de compte — obligatoire si auth, guideline Apple 5.1.1v).
 
-## Thème clair/sombre
+## Thème clair/sombre — contrat de tokens fixe
 
-Respecte le réglage système par défaut (`useColorScheme`), tokens dans `theme/colors.ts`. Teste visuellement
-les deux modes avant de cocher la phase (pas de texte illisible dans un mode).
+`theme/colors.ts` (cloné depuis `templates/base/`) exporte un hook **`useThemeColors()`** qui renvoie,
+réactivement selon `useColorScheme()`, un objet avec exactement ces clés — tout écran/archétype de La
+Recette les consomme par ces noms, ne les renomme jamais :
+
+```
+background, surface, surfaceMuted, text, textMuted, border, accent, onAccent, error
+```
+
+Dans un composant : `const colors = useThemeColors();` en tête de fonction, puis `colors.text`, etc. —
+jamais l'export statique `colors` (fallback clair uniquement, réservé aux contextes hors composant React).
+Teste visuellement les deux modes avant de cocher la phase (pas de texte illisible dans un mode).
 
 ## Self-vérification de cette phase
 

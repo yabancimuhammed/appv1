@@ -9,42 +9,54 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fetchWithRetry, FatalHttpError } from "./lib/retry.mjs";
 
 const SECRETS_PATH = path.join(process.env.CLAUDE_PROJECT_DIR ?? ".", ".recette", "secrets.env");
+
+/** true = clé valide, false = rejetée par l'API (clé invalide), throw = erreur transitoire persistante. */
+async function liveCheck(fn) {
+  try {
+    await fetchWithRetry(fn, { retries: 2, baseDelayMs: 400, label: "vérification live" });
+    return true;
+  } catch (err) {
+    if (err instanceof FatalHttpError) return false;
+    throw err;
+  }
+}
 
 const SERVICES = {
   github: { vars: ["GITHUB_TOKEN"], format: (v) => /^gh[ps]_[a-zA-Z0-9]{20,}$/.test(v) },
   supabase: {
     vars: ["SUPABASE_ACCESS_TOKEN"],
     format: (v) => /^sbp_[a-zA-Z0-9]{20,}$/.test(v),
-    live: async (vars) => {
-      const res = await fetch("https://api.supabase.com/v1/projects", {
-        headers: { Authorization: `Bearer ${vars.SUPABASE_ACCESS_TOKEN}` },
-      });
-      return res.ok;
-    },
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.supabase.com/v1/projects", {
+          headers: { Authorization: `Bearer ${vars.SUPABASE_ACCESS_TOKEN}` },
+        }),
+      ),
   },
   vercel: {
     vars: ["VERCEL_TOKEN"],
     format: (v) => v.length > 10,
-    live: async (vars) => {
-      const res = await fetch("https://api.vercel.com/v2/user", {
-        headers: { Authorization: `Bearer ${vars.VERCEL_TOKEN}` },
-      });
-      return res.ok;
-    },
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.vercel.com/v2/user", {
+          headers: { Authorization: `Bearer ${vars.VERCEL_TOKEN}` },
+        }),
+      ),
   },
   expo: { vars: ["EXPO_TOKEN"], format: (v) => v.length > 10 },
   revenuecat: { vars: ["REVENUECAT_SECRET_KEY", "EXPO_PUBLIC_REVENUECAT_KEY"], format: (v) => v.length > 10 },
   openai: {
     vars: ["OPENAI_API_KEY"],
     format: (v) => /^sk-[a-zA-Z0-9]{20,}$/.test(v),
-    live: async (vars) => {
-      const res = await fetch("https://api.openai.com/v1/models", {
-        headers: { Authorization: `Bearer ${vars.OPENAI_API_KEY}` },
-      });
-      return res.ok;
-    },
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.openai.com/v1/models", {
+          headers: { Authorization: `Bearer ${vars.OPENAI_API_KEY}` },
+        }),
+      ),
   },
   apple: { vars: ["APPLE_ASC_KEY_ID", "APPLE_ASC_ISSUER_ID", "APPLE_ASC_PRIVATE_KEY_PATH"], format: (v) => v.length > 3 },
 };

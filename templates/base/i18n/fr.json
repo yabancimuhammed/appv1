@@ -1,0 +1,30 @@
+{
+  "common": {
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "loading": "Chargement..."
+  },
+  "auth": {
+    "signInTitle": "Connexion",
+    "signUpTitle": "Créer un compte",
+    "emailPlaceholder": "Adresse e-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "signIn": "Se connecter",
+    "signUp": "Créer mon compte",
+    "forgotPassword": "Mot de passe oublié ?",
+    "switchToSignUp": "Pas encore de compte ? Créer un compte",
+    "switchToSignIn": "Déjà un compte ? Se connecter",
+    "genericError": "Impossible de te connecter pour le moment, vérifie tes identifiants."
+  },
+  "settings": {
+    "title": "Réglages",
+    "account": "Compte",
+    "signOut": "Se déconnecter",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteAccountConfirmTitle": "Supprimer définitivement ton compte ?",
+    "deleteAccountConfirmBody": "Toutes tes données seront supprimées. Cette action est irréversible.",
+    "deleteAccountError": "Impossible de supprimer le compte pour le moment, réessaie."
+  }
+}

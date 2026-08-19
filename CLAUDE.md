@@ -25,8 +25,8 @@ contient tout ce qu'il te faut ; l'utilisateur, lui, ne connaît rien à la tech
 
 ## Où est quoi
 
-- **Commandes** (`/recette`, `/setup`, `/new`, `/build`, `/preview`, `/deploy`, `/blog`, `/seo`, `/ui`,
-  `/fix`, `/update`, `/rejected`, `/app-store`, `/doctor`, `/status`) : `.claude/commands/`.
+- **Commandes** (`/recette`, `/launch`, `/setup`, `/new`, `/build`, `/preview`, `/deploy`, `/blog`, `/seo`,
+  `/ui`, `/fix`, `/update`, `/rejected`, `/app-store`, `/doctor`, `/status`) : `.claude/commands/`.
 - **Skills** (constitution, patterns métier, backend, paywall, landing, assets, SEO…) : `.claude/skills/`.
 - **Agents** (app-builder, auditeur) : `.claude/agents/`.
 - **Scripts** exécutables : `$CLAUDE_PROJECT_DIR/scripts/` (crée l'app, vérifie les comptes, génère les

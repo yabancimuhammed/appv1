@@ -4,11 +4,12 @@ import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
 import { supabase } from "../../lib/supabase";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 export default function LibraryItemDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [item, setItem] = useState<{ title: string; body: string; ai_summary: string | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
 

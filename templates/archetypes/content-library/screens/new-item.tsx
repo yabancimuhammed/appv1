@@ -4,12 +4,13 @@ import { View, TextInput, Pressable, Text, ActivityIndicator } from "react-nativ
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { supabase } from "../../lib/supabase";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 const HAS_AI = false; // passe à true + branche le bouton ci-dessous si APP-SPEC.md prévoit de l'IA
 
 export default function NewLibraryItemScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);

@@ -4,10 +4,11 @@ import { View, TextInput, Pressable, Text, ActivityIndicator } from "react-nativ
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { supabase } from "../../lib/supabase";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 export default function NewItemScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

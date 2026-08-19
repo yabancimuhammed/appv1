@@ -4,12 +4,13 @@ import { FlatList, Pressable, Text, View, ActivityIndicator } from "react-native
 import { useTranslation } from "react-i18next"; // ou l'équivalent i18n déjà en place dans le scaffold
 import { supabase } from "../../lib/supabase";
 import { computeStreak, type Entry } from "./streak";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 type Item = { id: string; name: string };
 
 export default function ItemsListScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [items, setItems] = useState<Item[] | null>(null);
   const [streaks, setStreaks] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);

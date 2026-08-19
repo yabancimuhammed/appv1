@@ -4,12 +4,13 @@ import { FlatList, Pressable, Text, TextInput, View, ActivityIndicator } from "r
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { supabase } from "../../lib/supabase";
-import { colors } from "../../theme/colors";
+import { useThemeColors } from "../../theme/colors";
 
 type LibraryItem = { id: string; title: string; body: string };
 
 export default function LibraryListScreen() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [items, setItems] = useState<LibraryItem[] | null>(null);
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);

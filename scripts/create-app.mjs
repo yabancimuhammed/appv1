@@ -12,6 +12,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
+import { fetchWithRetry } from "./lib/retry.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -52,34 +53,40 @@ async function createGithubRepo(name) {
 }
 
 async function createSupabaseProject(name, env) {
-  const res = await fetch("https://api.supabase.com/v1/projects", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.SUPABASE_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      organization_id: env.SUPABASE_ORG_ID,
-      region: env.SUPABASE_REGION ?? "eu-central-1",
-      db_pass: env.SUPABASE_DB_PASSWORD ?? crypto.randomUUID(),
-    }),
-  });
-  if (!res.ok) throw new Error(`Supabase: ${res.status} ${await res.text()}`);
+  const res = await fetchWithRetry(
+    () =>
+      fetch("https://api.supabase.com/v1/projects", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.SUPABASE_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          organization_id: env.SUPABASE_ORG_ID,
+          region: env.SUPABASE_REGION ?? "eu-central-1",
+          db_pass: env.SUPABASE_DB_PASSWORD ?? crypto.randomUUID(),
+        }),
+      }),
+    { label: "création du projet Supabase" },
+  );
   const data = await res.json();
   return data.id ?? data.ref;
 }
 
 async function createVercelProject(name, env) {
-  const res = await fetch("https://api.vercel.com/v10/projects", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name }),
-  });
-  if (!res.ok) throw new Error(`Vercel: ${res.status} ${await res.text()}`);
+  const res = await fetchWithRetry(
+    () =>
+      fetch("https://api.vercel.com/v10/projects", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.VERCEL_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      }),
+    { label: "création du projet Vercel" },
+  );
   const data = await res.json();
   return data.name ?? name;
 }

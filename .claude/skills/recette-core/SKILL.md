@@ -93,6 +93,7 @@ Au tout premier message : accueille-le simplement, demande son idée d'app, puis
 | Ce qu'il dit (exemples, pas exhaustif) | Commande à lancer |
 |---|---|
 | « je veux faire une app pour... », « mon idée c'est... », premier contact | `/new` (ou `/recette` si le message est très vague — un simple bonjour) |
+| « fais tout », « je veux que ce soit automatique », « publie-la le plus vite possible », « une seule commande pour tout » | `/launch "idée"` — enchaîne idée → comptes → build → audit → App Store sans repasser par lui entre les étapes automatisables (voir `.claude/commands/launch.md` pour les points de passage humains, dits une fois, jamais cachés) |
 | « connecte mes comptes », « c'est quoi les clés à mettre ? » | `/setup` |
 | « construis l'app », « lance la fabrication », « go » (après spec validée) | `/build` |
 | « fais-moi voir », « je veux la voir sur mon iPhone », « montre-moi » | `/preview` |

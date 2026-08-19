@@ -1,0 +1,30 @@
+{
+  "common": {
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create an account",
+    "emailPlaceholder": "Email address",
+    "passwordPlaceholder": "Password",
+    "signIn": "Sign in",
+    "signUp": "Create my account",
+    "forgotPassword": "Forgot password?",
+    "switchToSignUp": "No account yet? Create one",
+    "switchToSignIn": "Already have an account? Sign in",
+    "genericError": "Couldn't sign you in right now, check your credentials."
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete my account",
+    "deleteAccountConfirmTitle": "Permanently delete your account?",
+    "deleteAccountConfirmBody": "All your data will be deleted. This action cannot be undone.",
+    "deleteAccountError": "Couldn't delete your account right now, try again."
+  }
+}
