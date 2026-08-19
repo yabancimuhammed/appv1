@@ -74,3 +74,13 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   (confirmé, correctement diagnostiqué "erreur réseau" grâce au correctif proxy — pas un faux rejet cette
   fois). Comptes restants pour cette app : Expo (fabrication), puis RevenueCat + OpenAI (l'app prévoit de
   l'IA et un abonnement).
+- **Nouvelle session, retest** — le client a redonné la liste des 5 domaines nécessaires
+  (`api.supabase.com`, `api.vercel.com`, `api.expo.dev`, `api.openai.com`, `api.revenuecat.com`). Retesté
+  un par un via la passerelle proxy de cette session : **toujours refusés**, même diagnostic qu'avant
+  ("gateway answered 403 to CONNECT (policy denial)" — un refus de politique réseau, pas un problème de
+  clé). Ce n'est pas corrigeable depuis l'intérieur de la session : la politique réseau d'un environnement
+  Claude Code sur le web se règle dans les paramètres de l'environnement, sur claude.ai (liste des domaines
+  autorisés en sortie) — voir la doc officielle
+  (https://code.claude.com/docs/en/claude-code-on-the-web). Prochaine action côté client : ajouter ces 5
+  domaines à la liste blanche de l'environnement (ou passer sur un accès réseau plus large), puis relancer
+  la session — je reprendrai la vérification des comptes immédiatement là où je me suis arrêté.
