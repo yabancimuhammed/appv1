@@ -3,7 +3,7 @@
 
 create table if not exists public.items (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
   name text not null,
   -- adapte/ajoute les champs métier ici selon APP-SPEC.md (ex. target_per_week int, color text…)
   created_at timestamptz not null default now()
@@ -11,7 +11,7 @@ create table if not exists public.items (
 
 create table if not exists public.entries (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
   item_id uuid not null references public.items (id) on delete cascade,
   done_on date not null default current_date,
   created_at timestamptz not null default now(),

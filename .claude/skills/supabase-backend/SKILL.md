@@ -23,6 +23,12 @@ utilisateur connecté peut lire les données de tous les autres via l'API publiq
 quasi certain (guideline 5) en plus d'une vraie faille.
 
 ```sql
+create table public.<table> (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  -- ...
+);
+
 alter table public.<table> enable row level security;
 
 create policy "own rows only"
@@ -31,6 +37,11 @@ for all
 using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
 ```
+
+**`default auth.uid()` sur `user_id` — vérifié nécessaire en conditions réelles**, pas juste une précaution
+en l'air : sans ce défaut, un insert qui oublie de préciser `user_id` (bug futur, champ retiré par erreur
+lors d'une adaptation d'archétype) échoue avec une erreur RLS générique (`42501`) au lieu d'être rempli
+automatiquement avec le bon utilisateur — un filet de sécurité manquant plutôt qu'un message clair.
 
 ## Migrations
 
