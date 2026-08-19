@@ -28,6 +28,22 @@ const SECRET_VALUE_PATTERNS = [
 // mentionner en argument d'une autre commande, ex. `rm .recette/secrets.env` n'est pas une fuite).
 const RISKY_VERBS = /^(cat|less|more|type|head|tail|echo|printf|cp|scp|curl|git add|git commit)\b/i;
 
+// `cat >> secrets.env << 'EOF' ... EOF` ÉCRIT dans le fichier (cas normal pendant /setup — ranger une
+// nouvelle clé) ; ça ne doit pas être confondu avec `cat secrets.env` qui l'AFFICHE. On distingue les
+// deux : si le chemin sensible n'apparaît QUE comme cible d'une redirection d'écriture (`>`/`>>` juste
+// avant), ce n'est pas une fuite.
+const WRITE_REDIRECT_TARGET =
+  />{1,2}\s*['"]?(\.recette\/secrets\.env|[^\s'"]*secrets\.env|[^\s'"]*\.p8|[^\s'"]*\.mobileprovision|[^\s'"]*\.keystore|[^\s'"]*serviceAccountKey[^\s'"]*\.json)/g;
+
+function sensitivePathOnlyAppearsAsWriteTarget(command) {
+  const writeTargets = [...command.matchAll(WRITE_REDIRECT_TARGET)].map((m) => m[1]);
+  if (writeTargets.length === 0) return false;
+  // Retire chaque occurrence "> <cible>" du texte, puis revérifie : s'il ne reste plus aucune mention
+  // sensible, tout ce qu'on a vu était bien une cible d'écriture, pas une lecture.
+  const withoutWriteTargets = command.replace(WRITE_REDIRECT_TARGET, "");
+  return !SENSITIVE_PATHS.some((p) => p.test(withoutWriteTargets));
+}
+
 function readStdin() {
   return new Promise((resolve) => {
     let data = "";
@@ -79,7 +95,7 @@ async function main() {
   }
 
   const touchesSensitivePath = SENSITIVE_PATHS.some((p) => p.test(command));
-  if (touchesSensitivePath && RISKY_VERBS.test(command.trim())) {
+  if (touchesSensitivePath && RISKY_VERBS.test(command.trim()) && !sensitivePathOnlyAppearsAsWriteTarget(command)) {
     return block(
       "Cette commande lit, copie ou committerait un fichier de secrets (.recette/secrets.env, une clé " +
         ".p8, un keystore…). Ces fichiers ne doivent jamais être affichés dans le chat ni ajoutés à git " +
