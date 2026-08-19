@@ -86,12 +86,20 @@ const SERVICES = {
   revenuecat: {
     vars: ["REVENUECAT_SECRET_KEY", "EXPO_PUBLIC_REVENUECAT_KEY"],
     format: (v) => v.length > 10,
-    live: async (vars) =>
-      liveCheck(() =>
-        fetch("https://api.revenuecat.com/v2/projects", {
-          headers: { Authorization: `Bearer ${vars.REVENUECAT_SECRET_KEY}` },
-        }),
-      ),
+    // RevenueCat a deux générations de clé secrète : "legacy" (v1, ce que /setup demande — c'est la clé
+    // qui sert aux edge functions/webhooks) et v2 (nouvelle, pour l'API de gestion de projet). Le seul
+    // endpoint v2 qu'on peut appeler sans données de test (/v2/projects) rejette une clé legacy avec un
+    // 403 "authorization_error" distinct d'une VRAIE clé invalide (401 "authentication_error") — on
+    // distingue les deux plutôt que de traiter les deux comme un rejet.
+    live: async (vars) => {
+      const res = await fetch("https://api.revenuecat.com/v2/projects", {
+        headers: { Authorization: `Bearer ${vars.REVENUECAT_SECRET_KEY}` },
+      });
+      if (res.ok) return true;
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 403 && body.type === "authorization_error") return true; // clé legacy valide
+      return false;
+    },
   },
   openai: {
     vars: ["OPENAI_API_KEY"],
