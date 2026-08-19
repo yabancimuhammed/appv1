@@ -35,18 +35,32 @@ npx eas-cli@latest update --branch preview --environment preview --message "<ré
 ```
 (`expo-updates` peut échouer à s'auto-installer avec le même conflit de peer deps que d'habitude — voir
 skill `expo-ios-app` : `npm install expo-updates --legacy-peer-deps` en secours.)
-La commande affiche un lien **EAS Dashboard** (`https://expo.dev/accounts/<compte>/projects/<app>/updates/<id>`).
-C'est ce lien que tu donnes au client — ouvert sur son iPhone (Safari), il propose d'ouvrir l'app dans
-Expo Go. Republier après chaque changement de code reprend juste la commande `eas update` (pas besoin de
-relier le projet à nouveau).
+
+⚠️ **Piège vérifié en conditions réelles : ne donne JAMAIS le lien `https://expo.dev/accounts/.../updates/<id>`
+affiché dans le résumé de la commande.** C'est le tableau de bord humain — il exige une connexion à un
+compte Expo (redirection 307 vers une page de login), que le client n'a pas de raison d'avoir. Le
+client se retrouve bloqué sur un écran de connexion sans comprendre pourquoi.
+
+Le **bon lien**, celui qu'Expo Go ouvre directement sans aucune connexion, se construit à la main à partir
+du `projectId` (dans `app.json` → `expo.extra.eas.projectId`, ou affiché par `eas init`) et du nom de
+branche/channel publié :
+```
+exp://u.expo.dev/<projectId>?channel-name=<branche>
+```
+C'est **ce lien-là** que tu donnes au client — à coller dans Safari (barre d'adresse) ou dans Notes sur
+son iPhone, puis à ouvrir : ça propose directement Expo Go, sans étape intermédiaire. Republier après
+chaque changement de code reprend juste la commande `eas update` (pas besoin de relier le projet à
+nouveau, ni de renvoyer un nouveau lien — le même lien `exp://` sert à toutes les mises à jour de ce
+channel).
 
 Si un module natif custom empêche Expo Go de fonctionner (voir skill `expo-ios-app` — piège dev client),
 dis-le clairement et propose la voie de secours (`npx expo start --dev-client` avec un dev build déjà
 installé, ou explique qu'il faut d'abord un build EAS de développement).
 
 ## 3. Le QR code (local) / le lien (session cloud)
-En local, guide-le sur le scan (voir ci-dessus). En session cloud, donne le lien EAS Dashboard et
-explique en une phrase : « Ouvre ce lien sur ton iPhone, appuie sur le bouton pour l'ouvrir dans Expo Go. »
+En local, guide-le sur le scan (voir ci-dessus). En session cloud, donne le lien **`exp://u.expo.dev/...`**
+(jamais le lien `https://expo.dev/accounts/...`, voir piège ci-dessus) et explique en une phrase : « Colle
+ce lien dans Safari sur ton iPhone et ouvre-le — ça va proposer Expo Go directement. »
 
 ## 4. Guider le test
 Propose-lui de parcourir l'app (le moment magique en particulier). S'il repère un souci, note-le et
