@@ -70,7 +70,11 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   vrai bug de fiabilité : le fetch natif de Node ignore `HTTPS_PROXY` par défaut, ce qui donnait un faux
   "rejeté par l'API" au lieu d'une vraie "erreur réseau" (scripts/lib/proxy-bootstrap.mjs). **Décision
   prise par le client** : continuer ici quand même.
-- **Vercel** : même situation que Supabase — token reçu, rangé, mais `api.vercel.com` bloqué ici
-  (confirmé, correctement diagnostiqué "erreur réseau" grâce au correctif proxy — pas un faux rejet cette
-  fois). Comptes restants pour cette app : Expo (fabrication), puis RevenueCat + OpenAI (l'app prévoit de
-  l'IA et un abonnement).
+- **Vercel** : token reçu, rangé.
+- **Réseau débloqué** : le client a changé le réglage **Network access** de l'environnement (Trusted →
+  Custom avec les 5 domaines nécessaires) sur claude.ai/code. Une nouvelle session a été nécessaire pour
+  que ça prenne effet (confirmé : la 1ère tentative dans la session déjà ouverte a échoué, la 2e a marché).
+  **GitHub ✅, Supabase ✅, Vercel ✅ — tous re-vérifiés en live, tous valides.**
+  Comptes restants pour cette app : Expo (fabrication), puis RevenueCat + OpenAI (l'app prévoit de l'IA et
+  un abonnement). Le blocage de création de dépôt dédié (voir §0 Infra) reste, lui, séparé — un proxy
+  GitHub distinct du réglage réseau, non affecté par ce changement (à revérifier si utile).
