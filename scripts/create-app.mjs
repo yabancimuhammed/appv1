@@ -8,6 +8,7 @@
 // Nécessite dans .recette/secrets.env : GITHUB_TOKEN (ou `gh auth login` déjà fait),
 // SUPABASE_ACCESS_TOKEN, VERCEL_TOKEN.
 
+import "./lib/proxy-bootstrap.mjs";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";

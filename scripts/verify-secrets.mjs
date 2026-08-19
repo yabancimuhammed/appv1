@@ -7,6 +7,7 @@
 //   node scripts/verify-secrets.mjs supabase    # vérifie un seul service
 //   node scripts/verify-secrets.mjs --live      # ajoute un appel réseau minimal quand c'est possible
 
+import "./lib/proxy-bootstrap.mjs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fetchWithRetry, FatalHttpError } from "./lib/retry.mjs";
@@ -129,7 +130,17 @@ async function main() {
     console.log(`${icon} ${r.name.padEnd(12)} ${r.status}${r.detail ? " — " + r.detail : ""}`);
   }
 
-  process.exit(results.some((r) => r.status.startsWith("manquant") || r.status.startsWith("format") || r.status.startsWith("rejeté")) ? 1 : 0);
+  process.exit(
+    results.some(
+      (r) =>
+        r.status.startsWith("manquant") ||
+        r.status.startsWith("format") ||
+        r.status.startsWith("rejeté") ||
+        r.status.startsWith("erreur"),
+    )
+      ? 1
+      : 0,
+  );
 }
 
 main();
