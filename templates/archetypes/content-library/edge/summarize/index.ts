@@ -2,7 +2,7 @@
 // La clé OpenAI vit UNIQUEMENT ici (variable d'env serveur), jamais côté client (voir skill
 // supabase-backend). Adapte le PROMPT ci-dessous au domaine réel avant de livrer — ne laisse jamais le
 // prompt générique du template tel quel.
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const PROMPT =
   "Tu résumes un élément personnel sauvegardé par l'utilisateur en 1-2 phrases claires, dans sa langue " +

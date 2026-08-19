@@ -39,6 +39,17 @@ Toute évolution de schéma passe par un fichier de migration versionné dans `s
 la reprise/l'idempotence casse). Les migrations des **archétypes clonés** (`templates/archetypes/<x>/db/`)
 sont copiées ici telles quelles puis adaptées aux noms de champs de la spec.
 
+## Piège : `npm:` plutôt que `jsr:` pour les imports des edge functions
+
+Utilise **toujours** `npm:@supabase/supabase-js@2` (jamais `jsr:@supabase/supabase-js@2`) dans le code des
+edge functions. Vérifié en conditions réelles : un déploiement via l'API Management (POST/PATCH
+`/v1/projects/{ref}/functions`) tourne en mode `--no-remote` côté serveur — un import `jsr:` y échoue au
+boot (`BOOT_ERROR`, la fonction répond 503 à chaque appel) parce que la résolution du package JSR exige un
+accès réseau à ce moment-là, ce que `--no-remote` interdit. `npm:` fonctionne car les paquets npm sont
+résolus différemment par le runtime des edge functions. Vérifie toujours qu'une fonction **démarre** après
+déploiement (un simple appel qui doit renvoyer autre chose qu'un 503) — un déploiement qui renvoie 200/201
+ne prouve pas que la fonction boote, seulement qu'elle a été acceptée.
+
 ## Edge function proxy — zéro secret côté client
 
 **Aucune clé tierce (OpenAI, etc.) ne doit jamais apparaître dans le bundle app** (pas de `EXPO_PUBLIC_OPENAI_KEY`
@@ -51,7 +62,7 @@ sont copiées ici telles quelles puis adaptées aux noms de champs de la spec.
 
 ```ts
 // supabase/functions/<nom>/index.ts — squelette
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization");

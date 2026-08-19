@@ -5,7 +5,7 @@
 // La suppression réelle exige la clé service_role (droits admin) — jamais exposée côté client. Le
 // client appelle cette fonction avec son propre token de session ; la fonction vérifie qui est
 // l'utilisateur, PUIS utilise service_role en interne pour supprimer son compte et ses données.
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization");
