@@ -8,6 +8,27 @@ description: >
 
 # revenuecat-subscriptions — abonnements et paywall
 
+## Piège Expo Go — `react-native-purchases` peut planter TOUTE l'app, pas juste le paywall
+
+`react-native-purchases` est un module **natif**, absent d'Expo Go. Un import **statique** en tête de
+fichier (`import Purchases from "react-native-purchases"`) exécute du code natif dès le chargement du
+module — si ce fichier est importé par `app/_layout.tsx` (le cas courant : on synchronise l'identité
+RevenueCat à la connexion), **toute l'app plante dans Expo Go**, pas seulement l'écran paywall, et souvent
+pas au lancement mais juste après la connexion — le pire moment pour un smoke-test qui semblait pourtant
+passer jusque-là.
+
+**Toujours** :
+1. Import **dynamique** (`await import("react-native-purchases")`), jamais statique, dans le module qui
+   encapsule les appels RevenueCat (ex. `lib/purchases.ts`).
+2. Détecte l'environnement AVANT d'importer quoi que ce soit :
+   ```ts
+   import Constants, { ExecutionEnvironment } from "expo-constants";
+   const isExpoGo = () => Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+   ```
+3. Dans Expo Go, **no-op** silencieusement les fonctions d'identité/config (le reste de l'app doit rester
+   utilisable), et sur l'écran paywall affiche un message clair (« abonnements indisponibles dans cet
+   aperçu, disponibles sur TestFlight ») plutôt que de planter ou de laisser un écran vide.
+
 ## Ce qui se fait en phase Build (code, sans compte Apple)
 
 - Intégration SDK RevenueCat (`react-native-purchases`), clé **publique** RevenueCat en
@@ -31,7 +52,8 @@ const { data } = await supabase.from("profiles").select("is_premium").eq("id", u
 
 ## Ce qui NE se teste QUE sur un vrai build (GATE 2b, à `/app-store`)
 
-- L'achat réel en sandbox (le SDK RevenueCat fonctionne différemment en Expo Go qu'en build natif signé).
+- L'achat réel en sandbox (dans Expo Go, l'écran paywall affiche le message d'indisponibilité prévu — voir
+  piège ci-dessus — jamais un vrai flux d'achat, ça n'existe que sur un build natif signé).
 - Le webhook déclenché par un vrai événement App Store Connect.
 
 Ne coche jamais ces points comme « prouvés » pendant `/build` — note-les « à valider sur TestFlight » dans
