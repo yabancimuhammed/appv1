@@ -26,6 +26,20 @@ plus tard.
 npx create-expo-app@latest . --template
 ```
 
+### Piège tsconfig : exclure `supabase/functions/`
+
+Les edge functions (Deno, jamais du code React Native) vivent dans `supabase/functions/` du même projet.
+Sans exclusion, `tsc --noEmit` les inclut et échoue sur des erreurs qui n'ont rien à voir avec l'app
+(`Cannot find name 'Deno'`, imports `jsr:...` non résolus) — **toujours** ajouter dès le scaffold :
+
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": { "strict": true },
+  "exclude": ["node_modules", "supabase/functions/**"]
+}
+```
+
 ## Structure en couches (aucune chaîne en dur)
 
 ```
@@ -71,10 +85,23 @@ dans `i18n/fr.json`/`i18n/en.json` (jamais remplacées) — un objet JSON plat q
 
 ```
 npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill \
-  i18next react-i18next expo-localization expo-router
+  i18next react-i18next expo-localization expo-router expo-linking expo-constants \
+  react-native-safe-area-context react-native-screens
 ```
 
-(+ `expo-dev-client` si le piège Expo Go ci-dessus s'applique, `react-native-purchases` en phase Paywall.)
+`expo-linking`/`expo-constants`/`react-native-safe-area-context`/`react-native-screens` sont des
+dépendances **requises** par `expo-router` dès le premier écran (sans elles, `expo export` échoue à la
+résolution de module, pas seulement au runtime) — toujours les inclure dès le scaffold, pas seulement au
+premier crash de bundle.
+
+(+ `expo-dev-client` si le piège Expo Go ci-dessus s'applique, `react-native-purchases` en phase Paywall,
+`expo-image-picker`/`expo-camera` si le cœur métier capture une photo — voir l'archétype concerné.)
+
+**Si `npx expo install` échoue avec une erreur réseau** (ex. "HTTP Proxy Network Error" — la commande
+interroge un service Expo de compatibilité en plus du registre npm) : retombe sur `npm install
+<packages>` en plein, sans le wrapper `expo install`. Le registre npm (`registry.npmjs.org`) reste
+joignable même quand d'autres services Expo/tiers ne le sont pas ; vérifie ensuite les versions installées
+avec `tsc --noEmit` plutôt que de bloquer dessus.
 
 - Toute chaîne visible par l'utilisateur passe par les clés i18n (namespaces ci-dessus) — jamais de texte
   en dur dans un composant.

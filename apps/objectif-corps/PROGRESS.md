@@ -20,14 +20,30 @@ Lancé via `/launch`. Voir `APP-SPEC.md` pour le plan produit (verrouillé, GATE
   dans un environnement débloqué : créer le repo dédié, y transférer ce dossier, poursuivre l'infra.
 
 ## 1. Scaffold
-- [ ] Projet Expo (SDK épinglé), navigation, thème clair/sombre, i18n FR/EN — voir skill `expo-ios-app`.
+- [x] Projet Expo SDK 57 (épinglé `~57.0.14`), expo-router, thème clair/sombre réactif
+      (`useThemeColors()`), i18n FR/EN (i18next), auth gate (`app/_layout.tsx` + `app/sign-in.tsx`),
+      4 onglets (Journal/Scanner/Progression/Réglages). **Vérifié réellement** : `tsc --noEmit` ✅,
+      `expo export --platform ios` ✅ (1200 modules, bundle iOS généré). Zéro secret dans le bundle
+      (grep `EXPO_PUBLIC_` + clés en dur — vérifié, propre).
+- [x] Bug généralisable trouvé et corrigé dans le produit (pas juste ici) : `tsconfig.json` doit exclure
+      `supabase/functions/**` (code Deno, pas React Native) sinon `tsc --noEmit` échoue toujours dès
+      qu'une app a une edge function — ajouté au skill `expo-ios-app`.
+- Dépendances ajoutées au-delà de la liste du skill (au fil du scaffold réel) : `expo-linking`,
+  `expo-constants` (peers requis par `expo-router`, non listés explicitement avant), `react-native-safe-area-context`,
+  `react-native-screens`, `expo-image-picker`. À ajouter à la liste du skill `expo-ios-app`.
 
 ## 2. Backend
-- [ ] Auth + RLS, migrations (archétypes `content-library` + `tracker-streak` composés), edge functions.
+- [x] Migrations écrites (`meals` + `measurements`, RLS sur les deux) et edge functions écrites
+      (`analyze-meal` avec garde-fous de sécurité dans le prompt, `delete-account` cloné de
+      `templates/base`). **Pas encore appliquées** — nécessite le projet Supabase (bloqué, voir §0) et la
+      CLI `supabase` pour `db push` + `functions deploy`, inatteignables dans cette session.
 
 ## 3. Features (cœur métier)
-- [ ] Scanner un repas (photo → IA) + journal + conseils + suggestions de remplacement + progression.
-- [ ] Smoke-test runtime (voir skill `app-core-patterns`) — pas coché tant que non testé en conditions réelles.
+- [ ] **Code écrit** (Journal, Scanner avec photo→IA éditable, Progression) mais **PAS vérifié en
+      conditions réelles** — smoke-test runtime impossible dans cette session (pas de backend Supabase
+      appliqué, pas de clé OpenAI testable, pas de device Expo Go connecté à ce réseau). Compile et
+      bundle (voir phase 1), mais "ça compile" ≠ "ça marche" (règle app-core-patterns §3) : ne pas
+      considérer cette phase terminée avant le smoke-test réel une fois l'infra en place.
 
 ## 4. Paywall
 - [ ] Entitlement/offering RevenueCat, écran paywall conforme, webhook `is_premium`.
