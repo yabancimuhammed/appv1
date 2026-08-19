@@ -83,7 +83,16 @@ const SERVICES = {
         }),
       ),
   },
-  revenuecat: { vars: ["REVENUECAT_SECRET_KEY", "EXPO_PUBLIC_REVENUECAT_KEY"], format: (v) => v.length > 10 },
+  revenuecat: {
+    vars: ["REVENUECAT_SECRET_KEY", "EXPO_PUBLIC_REVENUECAT_KEY"],
+    format: (v) => v.length > 10,
+    live: async (vars) =>
+      liveCheck(() =>
+        fetch("https://api.revenuecat.com/v2/projects", {
+          headers: { Authorization: `Bearer ${vars.REVENUECAT_SECRET_KEY}` },
+        }),
+      ),
+  },
   openai: {
     vars: ["OPENAI_API_KEY"],
     format: (v) => /^sk-[a-zA-Z0-9]{20,}$/.test(v),
