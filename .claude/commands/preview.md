@@ -87,6 +87,21 @@ npx expo install react-dom react-native-web    # une fois, si pas déjà présen
 npx expo export --platform web
 cd dist && npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" --name <slug>-preview
 ```
+
+⚠️ **Piège vérifié en conditions réelles, une fois le dépôt de l'app relié à un projet Vercel (ex. après
+`/deploy` de la landing) : le déploiement échoue avec `"fetch failed"` côté CLI**, un message opaque qui ne
+dit pas la vraie cause. La vraie erreur, visible seulement en interrogeant l'API Vercel directement
+(`GET https://api.vercel.com/v6/deployments?projectId=...`, champ `errorMessage`) :
+`"Git author noreply@anthropic.com must have access to the team ... on Vercel to create deployments."` —
+Vercel détecte les métadonnées Git du dépôt englobant (même en déployant depuis le sous-dossier `dist/`) et
+bloque les déploiements dont l'auteur du commit n'est pas reconnu comme membre de l'équipe. Contournement :
+copie `dist/` **hors de tout dépôt Git** avant de déployer, pour que le CLI Vercel ne détecte aucune
+métadonnée Git à vérifier :
+```
+rm -rf /tmp/<dossier>/dist-deploy && mkdir -p /tmp/<dossier>/dist-deploy
+cp -r dist/. /tmp/<dossier>/dist-deploy/
+cd /tmp/<dossier>/dist-deploy && npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" --name <slug>-preview
+```
 Donne au client l'URL `https://<slug>-preview.vercel.app` obtenue — ça marche sur iPhone (Safari) comme
 sur ordinateur, aucune installation. Limite honnête à dire une fois, simplement : la caméra et les achats
 réels ne sont pas testables sur le web (RevenueCat est désactivé sur le web aussi, voir garde
