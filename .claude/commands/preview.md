@@ -29,12 +29,26 @@ fiable non plus : ngrok n'est généralement pas dans la liste blanche réseau d
 place **EAS Update**, qui publie le bundle sur les serveurs Expo — le téléphone le télécharge depuis
 n'importe quel réseau, sans dépendre de cette session :
 ```
-npx eas-cli@latest init --non-interactive --force            # une fois : lie le projet EAS
-npx eas-cli@latest update:configure --non-interactive         # une fois : installe/configure expo-updates
+npx eas-cli@latest init --non-interactive --force              # une fois : lie le projet EAS
+npx eas-cli@latest update:configure --non-interactive           # une fois : installe/configure expo-updates
+npx eas-cli@latest channel:create preview --non-interactive     # une fois : le canal doit exister, "eas update --branch" seul ne le crée PAS
 npx eas-cli@latest update --branch preview --environment preview --message "<résumé du changement>"
 ```
 (`expo-updates` peut échouer à s'auto-installer avec le même conflit de peer deps que d'habitude — voir
 skill `expo-ios-app` : `npm install expo-updates --legacy-peer-deps` en secours.)
+
+⚠️ **Deux pièges vérifiés en conditions réelles, tous deux invisibles tant qu'on n'a pas essayé d'ouvrir le
+lien pour de vrai** :
+1. **`eas update --branch preview` ne crée PAS automatiquement de canal du même nom.** Sans canal, le lien
+   `exp://u.expo.dev/...?channel-name=preview` renvoie une 404 côté Expo Go ("There is no channel named
+   preview"). Il faut créer le canal explicitement une fois (`eas channel:create preview`, voir ci-dessus)
+   — il se lie alors à la branche existante du même nom.
+2. **`app.json` doit utiliser `"runtimeVersion": { "policy": "sdkVersion" }`, jamais `"appVersion"`, pour
+   qu'Expo Go puisse ouvrir la mise à jour.** `"appVersion"` publie sous un runtime du type `"1.0.0"` (le
+   numéro de version de l'app) ; Expo Go, lui, s'identifie toujours avec son propre SDK (`exposdk:57.0.0`,
+   par ex.) — ces deux runtimes ne matchent jamais, et le canal reste introuvable même une fois créé. Vérifie
+   après publication que le résumé de `eas update` affiche bien `Runtime version    exposdk:<version>` —
+   sinon la policy est encore mal réglée.
 
 ⚠️ **Piège vérifié en conditions réelles : ne donne JAMAIS le lien `https://expo.dev/accounts/.../updates/<id>`
 affiché dans le résumé de la commande.** C'est le tableau de bord humain — il exige une connexion à un
