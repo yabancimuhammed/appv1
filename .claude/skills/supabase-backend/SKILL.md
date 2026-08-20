@@ -43,6 +43,30 @@ en l'air : sans ce défaut, un insert qui oublie de préciser `user_id` (bug fut
 lors d'une adaptation d'archétype) échoue avec une erreur RLS générique (`42501`) au lieu d'être rempli
 automatiquement avec le bon utilisateur — un filet de sécurité manquant plutôt qu'un message clair.
 
+## Piège vérifié en conditions réelles : confirmation e-mail activée par défaut = inscriptions bloquées
+
+Un projet Supabase neuf a `mailer_autoconfirm: false` — l'inscription exige un e-mail de confirmation, envoyé
+par le service SMTP intégré gratuit. Ce service a un quota **très bas** (quelques e-mails/heure) : dès qu'il
+est épuisé (souvent par tes propres smoke-tests de la phase Backend), toute nouvelle inscription échoue
+côté serveur avec un message générique — l'app affiche juste « impossible de te connecter », rien de plus
+précis, ce qui ressemble à un bug alors que c'est un quota. Testable directement en dehors de l'app :
+```
+curl -s -X POST "$SUPABASE_URL/auth/v1/signup" -H "apikey: $ANON_KEY" -H "Content-Type: application/json" \
+  -d '{"email":"...","password":"..."}'
+# {"code":429,"error_code":"over_email_send_rate_limit",...} = c'est ce piège, pas un bug de l'app
+```
+Tant que l'app n'a pas son propre SMTP (domaine personnalisé, hors scope MVP), active la confirmation
+automatique via l'API Management — aucun e-mail envoyé, l'inscription réussit immédiatement :
+```
+curl -s -X PATCH "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+  -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"mailer_autoconfirm": true}'
+```
+C'est un changement de comportement auth (pas juste un secret) — confirme-le au client en une phrase avant
+de l'appliquer (voir constitution : confirmer les changements non triviaux), même si c'est sans risque et
+réversible. À faire systématiquement en phase Backend, avant le premier smoke-test d'inscription — pas
+seulement quand le symptôme apparaît en `/preview`.
+
 ## Migrations
 
 Toute évolution de schéma passe par un fichier de migration versionné dans `supabase/migrations/`
