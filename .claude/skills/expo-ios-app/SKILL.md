@@ -133,7 +133,7 @@ background, surface, surfaceMuted, text, textMuted, border, accent, onAccent, er
 Clés additives pour le design system "glass" (voir section dédiée plus bas), présentes par défaut dans
 `templates/base/theme/colors.ts` :
 ```
-backgroundGradient, accentSoft, glass, glassBorder, glassTint, gradientAccent
+backgroundGradient, accentSoft, glass, glassBorder, glassTint, gradientAccent, aurora
 ```
 
 Dans un composant : `const colors = useThemeColors();` en tête de fonction, puis `colors.text`, etc. —
@@ -170,6 +170,24 @@ npx expo install expo-blur expo-linear-gradient react-native-svg @react-native-c
 ```
 (`@react-native-community/slider` sert dès qu'un réglage numérique borné a plus de sens en curseur qu'en
 champ texte — objectif de poids, portion, etc.)
+
+**Fond animé "fluide" (2026)** — au-delà du glass statique, `components/FluidBackground.tsx`
+(`react-native-reanimated`) fait dériver 3 bulles de couleur en boucle infinie derrière tout écran ; posé
+une seule fois dans `ScreenBackground.tsx`, donc actif partout sans y retoucher écran par écran. Palette
+dans `theme/colors.ts` → clé additive `aurora: [string, string, string]` (3 teintes vives, pas juste des
+nuances de l'accent — c'est ce qui donne l'effet "qui attire l'oeil"). Dépendance à ajouter au scaffold :
+`npx expo install react-native-reanimated`.
+
+**Piège vérifié en conditions réelles — un écran d'onboarding/étape-obligatoire qui navigue lui-même après
+une écriture en base peut sembler "ne rien faire au clic"** : si `app/_layout.tsx` garde un état dérivé
+(ex. `onboarded`) qui décide de rediriger vers cet écran, et que cet état n'est mis à jour qu'en refetchant
+sur changement de session, alors écran-qui-navigue → l'effet de redirection du layout tourne AVANT que
+l'état ne soit rafraîchi → il voit encore l'ancienne valeur → il renvoie aussitôt vers l'écran qu'on vient
+de quitter. Résultat observable : le clic semble ne rien faire (l'utilisateur ne voit qu'un flash). Fix :
+expose un `Context` depuis le layout racine (`markOnboarded()` ou équivalent) que l'écran appelle pour
+mettre à jour l'état **avant** de naviguer, plutôt que de compter sur un refetch. Généralisable à toute
+étape "obligatoire une fois" (onboarding, consentement, etc.) gérée par une redirection dans le layout
+racine.
 
 **Barre d'onglets flottante en verre** : `app/(tabs)/_layout.tsx` utilise `tabBarStyle: { position:
 "absolute", ... }` + `tabBarBackground: () => <BlurView .../>` (iOS/web — sur Android, `BlurView` derrière

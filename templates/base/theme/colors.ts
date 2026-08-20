@@ -1,10 +1,10 @@
 // Tokens de couleur — copié tel quel en phase Scaffold (voir skill expo-ios-app).
 // Contrat de noms FIXE : tout écran/archétype de La Recette utilise ces clés exactes. N'en renomme
-// aucune sans mettre à jour tous les écrans qui les consomment. Les clés "glass*"/"gradient*"/"accentSoft"
-// portent le design system premium "glass" (voir components/GlassCard.tsx, ScreenBackground.tsx,
-// BackdropOrbs.tsx dans le même dossier `templates/base/`) — additives, jamais un remplacement des clés
-// historiques. `accent`/`accentSoft`/`gradientAccent` sont à personnaliser par app (ici : valeurs neutres
-// de départ) ; `/ui` peut les ajuster sans toucher au reste du contrat.
+// aucune sans mettre à jour tous les écrans qui les consomment. Les clés "glass*"/"gradient*"/"accentSoft"/
+// "aurora" portent le design system premium "glass" + fond animé (voir components/GlassCard.tsx,
+// ScreenBackground.tsx, FluidBackground.tsx dans le même dossier `templates/base/`) — additives, jamais un
+// remplacement des clés historiques. `accent`/`accentSoft`/`gradientAccent`/`aurora` sont à personnaliser
+// par app (ici : valeurs neutres de départ) ; `/ui` peut les ajuster sans toucher au reste du contrat.
 import { useColorScheme } from "react-native";
 
 const light = {
@@ -23,6 +23,7 @@ const light = {
   glassBorder: "rgba(17,17,20,0.1)",
   glassTint: "light" as "light" | "dark",
   gradientAccent: ["#3D5AFE", "#5B72FF", "#7B93FF"] as [string, string, string],
+  aurora: ["#2DD4BF", "#8B5CF6", "#FF8A65"] as [string, string, string],
 };
 
 const dark = {
@@ -41,6 +42,7 @@ const dark = {
   glassBorder: "rgba(255,255,255,0.12)",
   glassTint: "dark" as "light" | "dark",
   gradientAccent: ["#232349", "#3D5AFE", "#5B7CFA"] as [string, string, string],
+  aurora: ["#2DD4BF", "#A78BFA", "#FB923C"] as [string, string, string],
 };
 
 export type ThemeColors = typeof light;
