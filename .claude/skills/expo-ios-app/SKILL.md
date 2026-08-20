@@ -130,9 +130,53 @@ Recette les consomme par ces noms, ne les renomme jamais :
 background, surface, surfaceMuted, text, textMuted, border, accent, onAccent, error
 ```
 
+Clés additives pour le design system "glass" (voir section dédiée plus bas), présentes par défaut dans
+`templates/base/theme/colors.ts` :
+```
+backgroundGradient, accentSoft, glass, glassBorder, glassTint, gradientAccent
+```
+
 Dans un composant : `const colors = useThemeColors();` en tête de fonction, puis `colors.text`, etc. —
 jamais l'export statique `colors` (fallback clair uniquement, réservé aux contextes hors composant React).
 Teste visuellement les deux modes avant de cocher la phase (pas de texte illisible dans un mode).
+
+## Design system premium "glass" — par défaut sur toute nouvelle app
+
+Toute app La Recette démarre avec un look "verre dépoli" (glassmorphism) premium plutôt que des `View`
+à fond plein — vérifié en conditions réelles sur Objectif Corps (typecheck + bundle iOS/web après refonte
+complète de tous les écrans). Clone ces briques depuis `templates/base/components/` en même temps que le
+reste du scaffold, elles consomment les clés additives de `theme/colors.ts` (`glass`, `glassBorder`,
+`glassTint`, `backgroundGradient`, `accentSoft`, `gradientAccent`) :
+
+```
+cp -r "$CLAUDE_PROJECT_DIR/templates/base/components" components
+```
+
+- **`<ScreenBackground>`** — wrapper racine de chaque écran (fond dégradé doux via `expo-linear-gradient`),
+  remplace `<View style={{ backgroundColor: colors.background }}>`.
+- **`<GlassCard>`** — remplace toute `View` "carte" à fond plein : blur (`expo-blur`) + bordure translucide
+  + coins arrondis généreux (24). C'est la brique la plus utilisée, sur tous les écrans.
+- **`<BackdropOrbs>`** — bulles dégradées floues décoratives, posées derrière un header/hero (sign-in,
+  paywall, accueil) pour la profondeur — purement CSS/SVG, aucun asset externe.
+- **`<Chip>`** — bouton pilule sélectionnable (choix courts à choix unique : environnement, tags, etc.).
+- **`components/illustrations/Avatar3D.tsx`** — illustration vectorielle (react-native-svg) : un orbe en
+  verre dégradé + silhouette abstraite. **Toujours une illustration abstraite, jamais une photo ou un rendu
+  réaliste d'un corps** — variantes `feminine`/`masculine`/`neutral` différenciées par un simple contour de
+  coiffure, pas par une morphologie. Réutilisable pour tout avatar/hero illustré dont l'app a besoin.
+
+Dépendances à installer dès le scaffold pour ce design system :
+```
+npx expo install expo-blur expo-linear-gradient react-native-svg @react-native-community/slider
+```
+(`@react-native-community/slider` sert dès qu'un réglage numérique borné a plus de sens en curseur qu'en
+champ texte — objectif de poids, portion, etc.)
+
+**Barre d'onglets flottante en verre** : `app/(tabs)/_layout.tsx` utilise `tabBarStyle: { position:
+"absolute", ... }` + `tabBarBackground: () => <BlurView .../>` (iOS/web — sur Android, `BlurView` derrière
+une tab bar absolue n'a pas de rendu fiable, fallback sur un fond plein `colors.surface`). Piège vérifié :
+`position: "absolute"` fait passer la tab bar par-dessus le contenu — ajoute `paddingBottom: 110` (le double
+de la hauteur de tab bar visible) au `contentContainerStyle` de chaque écran à onglets, sinon le dernier
+élément de chaque liste reste caché derrière.
 
 ## Self-vérification de cette phase
 
