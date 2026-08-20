@@ -67,9 +67,36 @@ chaque changement de code reprend juste la commande `eas update` (pas besoin de 
 nouveau, ni de renvoyer un nouveau lien — le même lien `exp://` sert à toutes les mises à jour de ce
 channel).
 
-Si un module natif custom empêche Expo Go de fonctionner (voir skill `expo-ios-app` — piège dev client),
-dis-le clairement et propose la voie de secours (`npx expo start --dev-client` avec un dev build déjà
-installé, ou explique qu'il faut d'abord un build EAS de développement).
+⚠️ **Troisième piège, plus fondamental — vérifié en conditions réelles avec RevenueCat (paywall déjà
+construit, voir skill `revenuecat-subscriptions`)** : dès que le projet a un module natif hors SDK Expo
+(`react-native-purchases` typiquement, dès la phase Paywall), Expo Go **refuse carrément d'ouvrir la mise
+à jour** — même canal correct, même runtime correct — avec une erreur générique côté téléphone
+(`AppLoaderTask encountered an unexpected error and could not launch an update`). Ce n'est pas un problème
+de configuration à corriger : Expo Go vérifie l'empreinte des modules natifs **avant** de lancer le JS, et
+un module comme RevenueCat n'y a pas sa place, peu importe que le code l'appelle ou non (l'import
+dynamique + garde d'environnement du skill `revenuecat-subscriptions` évite un crash JS, pas ce refus au
+niveau natif). **Ne perds pas de temps à re-déboguer channel/runtime dans ce cas** — regarde direct si
+`package.json` contient un module natif hors SDK Expo (`react-native-purchases` notamment) avant même
+d'essayer Expo Go en session cloud, et passe à la voie de secours ci-dessous.
+
+**Voie de secours — export web, la plus simple en session cloud dès qu'un module natif custom est présent
+(ou si Expo Go coince pour une autre raison)** : un lien web ordinaire, ouvrable dans n'importe quel
+navigateur, sans app à installer, sans piège de canal/runtime :
+```
+npx expo install react-dom react-native-web    # une fois, si pas déjà présent
+npx expo export --platform web
+cd dist && npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" --name <slug>-preview
+```
+Donne au client l'URL `https://<slug>-preview.vercel.app` obtenue — ça marche sur iPhone (Safari) comme
+sur ordinateur, aucune installation. Limite honnête à dire une fois, simplement : la caméra et les achats
+réels ne sont pas testables sur le web (RevenueCat est désactivé sur le web aussi, voir garde
+`Platform.OS === "web"` dans `lib/purchases.ts`) — ça viendra avec TestFlight, à `/app-store`. Republier
+après un changement reprend juste les 2 dernières commandes (pas besoin de relier le projet Vercel).
+
+Si un module natif custom empêche Expo Go de fonctionner autrement (bug spécifique, pas le cas RevenueCat
+ci-dessus), voir skill `expo-ios-app` — piège dev client — et propose la voie de secours
+(`npx expo start --dev-client` avec un dev build déjà installé, ou explique qu'il faut d'abord un build
+EAS de développement).
 
 ## 3. Le QR code (local) / le lien (session cloud)
 En local, guide-le sur le scan (voir ci-dessus). En session cloud, donne le lien **`exp://u.expo.dev/...`**

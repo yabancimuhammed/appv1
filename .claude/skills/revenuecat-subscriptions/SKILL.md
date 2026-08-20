@@ -25,9 +25,18 @@ passer jusque-là.
    import Constants, { ExecutionEnvironment } from "expo-constants";
    const isExpoGo = () => Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
    ```
-3. Dans Expo Go, **no-op** silencieusement les fonctions d'identité/config (le reste de l'app doit rester
+3. Dans Expo Go **et sur le web** (`Platform.OS === "web"` — RevenueCat n'existe pas non plus dans un
+   navigateur), **no-op** silencieusement les fonctions d'identité/config (le reste de l'app doit rester
    utilisable), et sur l'écran paywall affiche un message clair (« abonnements indisponibles dans cet
    aperçu, disponibles sur TestFlight ») plutôt que de planter ou de laisser un écran vide.
+
+⚠️ **Ce que la garde ci-dessus ne résout PAS, vérifié en conditions réelles avec une vraie EAS Update** :
+une fois `react-native-purchases` dans les dépendances, **Expo Go refuse d'ouvrir la mise à jour**
+(`AppLoaderTask encountered an unexpected error`), même canal/runtime corrects, même si le code ne
+l'appelle jamais grâce à la garde — Expo Go vérifie l'empreinte des modules natifs avant de lancer le JS.
+Pas de correctif possible côté code : dès que le paywall est construit, `/preview` en session cloud doit
+basculer sur l'**export web** (voir `.claude/commands/preview.md` §2 — voie de secours) plutôt que
+persister sur Expo Go.
 
 ## Ce qui se fait en phase Build (code, sans compte Apple)
 
